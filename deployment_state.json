@@ -1,0 +1,41 @@
+{
+  "account_id": "117913377161",
+  "vpc_a": {
+    "id": "vpc-0ab4dbe0ca564ddcb",
+    "name": "Ecipient-Corporate-VPC",
+    "cidr": "10.0.0.0/16",
+    "region": "us-east-1",
+    "subnet_id": "subnet-0ab8e1b22451d3d21",
+    "subnet_cidr": "10.0.1.0/24",
+    "igw_id": "igw-055ad0d9adcdd905f",
+    "route_table_id": "rtb-0700a651654300911",
+    "security_group_id": "sg-02c36b88831f18a06",
+    "instance_id": "i-0fe0211c22984b6db",
+    "private_ip": "10.0.1.228",
+    "public_ip": "34.228.59.145"
+  },
+  "vpc_b": {
+    "id": "vpc-0eb0e3223945588d1",
+    "name": "Ecipient-Acquired-VPC",
+    "cidr": "192.168.0.0/16",
+    "region": "us-west-2",
+    "subnet_id": "subnet-0f0d523d58717c0aa",
+    "subnet_cidr": "192.168.1.0/24",
+    "igw_id": "igw-00bb0869377e3ef51",
+    "route_table_id": "rtb-0e474db279cfa9cdf",
+    "security_group_id": "sg-0c7dbf78bbad2ec35",
+    "instance_id": "i-0823a71fb17e665bf",
+    "private_ip": "192.168.1.32",
+    "public_ip": "52.88.243.105"
+  },
+  "peering": {
+    "id": "pcx-0b7985ff10437c850",
+    "status": "active",
+    "requester_vpc": "vpc-0ab4dbe0ca564ddcb",
+    "accepter_vpc": "vpc-0eb0e3223945588d1",
+    "requester_region": "us-east-1",
+    "accepter_region": "us-west-2"
+  },
+  "flow_logs_bucket": "ecipient-vpc-flow-logs-117913377161",
+  "flow_log_id": "fl-0e987714264a0b419"
+}
