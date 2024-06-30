@@ -1,0 +1,18 @@
+{
+  "ConfigRuleName": "required-tags-compliance-rule",
+  "Description": "Evaluates whether your AWS EC2 instances, EBS volumes, and VPC resources have the required tags (Environment, CostCenter, Owner, Project).",
+  "Scope": {
+    "ComplianceResourceTypes": [
+      "AWS::EC2::Instance",
+      "AWS::EC2::Volume",
+      "AWS::EC2::VPC"
+    ]
+  },
+  "Source": {
+    "Owner": "AWS",
+    "SourceIdentifier": "REQUIRED_TAGS"
+  },
+  "InputParameters": "{\"tag1Key\":\"Environment\",\"tag1Value\":\"Development,Staging,Production,SharedServices\",\"tag2Key\":\"CostCenter\",\"tag3Key\":\"Owner\",\"tag4Key\":\"Project\"}",
+  "MaximumExecutionFrequency": "TwentyFour_Hours",
+  "ConfigRuleState": "ACTIVE"
+}
