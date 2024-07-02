@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RestrictProvisioningOnBudgetBreach",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:RunInstances",
+        "rds:CreateDBInstance",
+        "redshift:CreateCluster",
+        "eks:CreateCluster",
+        "emr:RunJobFlow"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::*:role/AWSControlTowerExecution"
+        }
+      }
+    }
+  ]
+}
