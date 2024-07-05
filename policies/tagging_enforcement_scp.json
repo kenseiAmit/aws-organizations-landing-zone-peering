@@ -1,0 +1,64 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyEC2RunInstancesWithoutMandatoryTags",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:*:instance/*",
+        "arn:aws:ec2:*:*:volume/*"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Environment": "true",
+          "aws:RequestTag/CostCenter": "true",
+          "aws:RequestTag/Owner": "true",
+          "aws:RequestTag/Project": "true"
+        }
+      }
+    },
+    {
+      "Sid": "DenyEC2CreateVolumeWithoutMandatoryTags",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:CreateVolume"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:*:volume/*"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/Environment": "true",
+          "aws:RequestTag/CostCenter": "true",
+          "aws:RequestTag/Owner": "true",
+          "aws:RequestTag/Project": "true"
+        }
+      }
+    },
+    {
+      "Sid": "EnforceValidEnvironmentValues",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:CreateVolume"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:*:instance/*",
+        "arn:aws:ec2:*:*:volume/*"
+      ],
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestTag/Environment": [
+            "Development",
+            "Staging",
+            "Production",
+            "SharedServices"
+          ]
+        }
+      }
+    }
+  ]
+}
