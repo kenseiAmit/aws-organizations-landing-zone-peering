@@ -1,0 +1,84 @@
+========================================================
+ECIPIENT TECHNOLOGIES - INTER-VPC PEERING VERIFICATION
+========================================================
+Source Instance: Acquired Business EC2 (us-west-2)
+Source Private IP: 192.168.1.32
+Destination Instance: Corporate EC2 (us-east-1)
+Destination Private IP: 10.0.1.228
+Peering Connection: pcx-0b7985ff10437c850
+Execution Time: Sat Oct 17 16:04:42 UTC 2026
+--------------------------------------------------------
+Waiting 45 seconds for target instance web server to be ready...
+
+[TEST 1] ICMP PING CONNECTIVITY OVER PEERING CONNECTION:
+PING 10.0.1.228 (10.0.1.228) 56(84) bytes of data.
+64 bytes from 10.0.1.228: icmp_seq=1 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=2 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=3 ttl=127 time=56.8 ms
+64 bytes from 10.0.1.228: icmp_seq=4 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=5 ttl=127 time=56.7 ms
+
+--- 10.0.1.228 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4007ms
+rtt min/avg/max/mdev = 56.679/56.709/56.756/0.026 ms
+Ping Exit Code: 0
+
+[TEST 2] HTTP WEB SERVICE REACHABILITY OVER PEERING CONNECTION:
+*   Trying 10.0.1.228:80...
+* Established connection to 10.0.1.228 (10.0.1.228 port 80) from 192.168.1.32 port 36222 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 10.0.1.228
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+* HTTP 1.0, assume close after body
+< HTTP/1.0 200 OK
+< Server: SimpleHTTP/0.6 Python/3.9.25
+< Date: Sat, 17 Oct 2026 16:05:33 GMT
+< Content-type: text/html
+< Content-Length: 342
+< Last-Modified: Sat, 17 Oct 2026 16:04:26 GMT
+< 
+{ [342 bytes data]
+
+100    342 100    342   0      0   2978      0                              0
+100    342 100    342   0      0   2976      0                              0
+100    342 100    342   0      0   2974      0                              0
+* shutting down connection #0
+HTTP/1.0 200 OK
+Server: SimpleHTTP/0.6 Python/3.9.25
+Date: Sat, 17 Oct 2026 16:05:33 GMT
+Content-type: text/html
+Content-Length: 342
+Last-Modified: Sat, 17 Oct 2026 16:04:26 GMT
+
+<!DOCTYPE html>
+<html>
+<head><title>Ecipient Technologies - Corporate VPC</title></head>
+<body>
+<h1>Ecipient Technologies Corporate Research System</h1>
+<p>Region: us-east-1 (N. Virginia)</p>
+<p>VPC: vpc-0ab4dbe0ca564ddcb (10.0.0.0/16)</p>
+<p>Subnet: subnet-0ab8e1b22451d3d21 (10.0.1.0/24)</p>
+<p>Status: ONLINE & SERVING</p>
+</body>
+</html>
+Curl Exit Code: 0
+
+[TEST 3] TRACEROUTE HOP VERIFICATION:
+traceroute to 10.0.1.228 (10.0.1.228), 5 hops max, 60 byte packets
+ 1  * * *
+ 2  * * *
+ 3  * * *
+ 4  * * *
+ 5  * * *
+
+========================================================
+CONNECTIVITY VERIFICATION COMPLETED WITH STATUS:
+SUCCESS: Cross-region VPC Peering traffic verified!
+========================================================
