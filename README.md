@@ -1,9 +1,13 @@
-# Enterprise Multi-Account AWS Organizations Landing Zone, SCP Governance & Cross-Region VPC Peering
+<div align="center">
+  <img src="assets/hero-banner.svg" alt="AWS Organizations & VPC Peering" width="100%" />
+  <br/><br/>
+  ![AWS Organizations](https://img.shields.io/badge/Governance-AWS%20Organizations%20%2B%20Control%20Tower-FF9900?style=flat-square&logo=amazonaws&logoColor=white)
+  ![VPC Peering](https://img.shields.io/badge/Networking-us--east--1%20%E2%86%94%20us--west--2%20(56.7ms)-0D9488?style=flat-square)
+  ![FinOps](https://img.shields.io/badge/FinOps-SCP%20Tagging%20%2B%20Budget%20Actions-2563EB?style=flat-square)
+  ![License](https://img.shields.io/badge/License-MIT-slate?style=flat-square)
+</div>
 
-![AWS Organizations](https://img.shields.io/badge/Governance-AWS%20Organizations%20%2B%20Control%20Tower-FF9900?style=flat-square&logo=amazonaws&logoColor=white)
-![VPC Peering](https://img.shields.io/badge/Networking-us--east--1%20%E2%86%94%20us--west--2%20(56.7ms)-0D9488?style=flat-square)
-![FinOps](https://img.shields.io/badge/FinOps-SCP%20Tagging%20%2B%20Budget%20Actions-2563EB?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-slate?style=flat-square)
+---
 
 Enterprise multi-account cloud governance and cross-region networking blueprint designed for post-M&A cloud consolidation (**Ecipient Technologies**). Combines a **5-OU AWS Organizations + Control Tower Landing Zone**, preventative **Service Control Policy (SCP) tag enforcement**, **AWS Config** detective compliance, automated **AWS Budgets IAM/SCP freeze actions**, and live `boto3`-provisioned **cross-region VPC peering (`us-east-1` `10.0.0.0/16` ↔ `us-west-2` `192.168.0.0/16`)** verified via private EC2 ICMP/HTTP probes and S3 VPC Flow Logs.
 
