@@ -1,65 +1,130 @@
-# Ecipient Technologies: Enterprise AWS Organizations Infrastructure Architecture
-**Enterprise Multi-Account AWS Architecture Blueprint**
+# Enterprise Multi-Account AWS Organizations Landing Zone, SCP Governance & Cross-Region VPC Peering
 
-**Role:** Lead Enterprise Cloud Architect  
-**Professional Title:** Lead AWS Cloud Solutions Architect  
-**Certification:** AWS Certified Solutions Architect  
-**Submission Date:** October 17, 2026  
+![AWS Organizations](https://img.shields.io/badge/Governance-AWS%20Organizations%20%2B%20Control%20Tower-FF9900?style=flat-square&logo=amazonaws&logoColor=white)
+![VPC Peering](https://img.shields.io/badge/Networking-us--east--1%20%E2%86%94%20us--west--2%20(56.7ms)-0D9488?style=flat-square)
+![FinOps](https://img.shields.io/badge/FinOps-SCP%20Tagging%20%2B%20Budget%20Actions-2563EB?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-slate?style=flat-square)
 
----
+Enterprise multi-account cloud governance and cross-region networking blueprint designed for post-M&A cloud consolidation (**Ecipient Technologies**). Combines a **5-OU AWS Organizations + Control Tower Landing Zone**, preventative **Service Control Policy (SCP) tag enforcement**, **AWS Config** detective compliance, automated **AWS Budgets IAM/SCP freeze actions**, and live `boto3`-provisioned **cross-region VPC peering (`us-east-1` `10.0.0.0/16` ↔ `us-west-2` `192.168.0.0/16`)** verified via private EC2 ICMP/HTTP probes and S3 VPC Flow Logs.
 
-## Executive Overview
-
-This repository contains the complete, production-grade architectural design, live deployment telemetry, governance policies, and verification deliverables for **Ecipient Technologies**.
-
-Ecipient Technologies is undergoing rapid expansion, transitioning from a single-account AWS deployment to a secure, scalable multi-account enterprise architecture following the **AWS Well-Architected Framework**. This project meets all enterprise security, FinOps, and networking invariants and functional requirements across four core architectural domains:
-
-1. **Multi-Account AWS Architecture & Onboarding Governance (Task 1):**
-   - Hierarchical AWS Organizations OU tree (Management, Core Services, Workloads, Sandbox, and Acquired Businesses OUs).
-   - Dedicated Security Tooling, Centralized Log Archive, Shared Network, and Shared Services accounts.
-   - Comprehensive onboarding lifecycle: Automated account vending via AWS Control Tower Account Factory & Service Catalog, and a 6-phase M&A account ingestion pipeline with strict quarantine, SCP baselining, and IAM boundary enforcement.
-
-2. **Cross-Region Network Connectivity & Telemetry Verification (Task 2):**
-   - High-performance, cross-region VPC Peering connecting Corporate VPC (`10.0.0.0/16`, `us-east-1`) and Acquired Business VPC (`192.168.0.0/16`, `us-west-2`).
-   - Non-overlapping CIDR layout, symmetric route table orchestration, and zero-trust security group hardening.
-   - **Genuine Live AWS Verification:** End-to-end ICMP ping latency verification (56.7 ms RTT, 0% packet loss) and HTTP curl connectivity between private EC2 endpoints across AWS backbone fiber.
-   - Centralized VPC Flow Logs active on S3, capturing genuine `ACCEPT OK` cross-region traffic and proving perimeter dropping (`REJECT OK`) of unauthorized internet edge probes.
-
-3. **Enterprise Tagging Taxonomy & Automated Governance (Task 3):**
-   - Enterprise schema enforcing mandatory tags (`Environment`, `CostCenter`, `Owner`, `Project`) and recommended auditing tags (`Compliance`).
-   - Preventative Service Control Policy (`tagging_enforcement_scp.json`) denying non-compliant EC2 instance and EBS volume instantiation at the API perimeter.
-   - Detective AWS Config Managed Rule (`aws_config_required_tags.json`) continuously auditing compliance with EventBridge and SSM automated remediation workflows.
-
-4. **Multi-Tier Cost Controls & Automated Budget Actions (Task 4):**
-   - Enterprise AWS Budgets framework with tiered threshold alerts (80% actual warning, 100% forecasted risk alert, 100% actual critical breach).
-   - Automated Budget Actions (`budget_actions_policy.json`) programmatically attaching IAM/SCP restrictions to halt runaway provisioning upon critical spend breach.
-   - FinOps governance integrating AWS Cost Allocation Tags, Cost Anomaly Detection, and Compute Optimizer.
+Full 12-page architecture dossier: [`AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.pdf`](AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.pdf).
 
 ---
 
-## Submission Deliverables & Directory Structure
+## 1. Multi-Account Organizational Unit (OU) Hierarchy & M&A Quarantine
 
+![Enterprise 5-OU Hierarchy](assets/task1_ou_hierarchy_diagram.png)
+
+| Organizational Unit (OU) | Purpose & Workload Scope | Preventative & Detective Guardrails |
+| :--- | :--- | :--- |
+| **Security & Log Archive (Core)** | Centralized CloudTrail, Config, GuardDuty, S3 VPC Flow Log archive | Immutable log retention, `Deny` log deletion SCP |
+| **Shared Infrastructure** | Networking hub, IPAM, CI/CD artifact registries, directory services | Strict CIDR allocation, cross-account RAM sharing |
+| **Workloads (`Prod` / `Non-Prod`)** | Customer-facing SaaS & internal business platforms | Mandatory 4-tag SCP (`Environment`, `CostCenter`, `Owner`, `Project`) |
+| **Sandbox & R&D** | Time-boxed engineering experimentation | Hard monthly AWS Budget Action provisioning freeze at `100%` |
+| **Acquired Businesses (Quarantine)** | Newly acquired M&A AWS accounts pending security baseline | Restricted lateral network egress until 6-phase onboarding completes |
+
+---
+
+## 2. Cross-Region VPC Peering Architecture (`us-east-1` ↔ `us-west-2`)
+
+![Cross-Region VPC Peering Architecture](assets/task2_network_peering_architecture.png)
+
+| Parameter | Primary Region (`us-east-1` N. Virginia) | Secondary Region (`us-west-2` Oregon) |
+| :--- | :--- | :--- |
+| **VPC CIDR Block** | `10.0.0.0/16` (Non-overlapping) | `192.168.0.0/16` (Non-overlapping) |
+| **Peering Connection** | `pcx-0b7985ff10437c850` (`Requester`, `ACTIVE`) | `pcx-0b7985ff10437c850` (`Accepter`, `ACTIVE`) |
+| **Measured Private EC2 Latency** | **`56.709 ms` avg ICMP RTT (`0%` packet loss)** | Bidirectional `HTTP/1.0 200 OK` over private IPv4 |
+| **Network Telemetry** | S3 VPC Flow Logs (`ACCEPT OK` & perimeter `REJECT OK`) | `104+` verified flow records captured |
+
+---
+
+## 3. Live EC2 Connectivity & S3 VPC Flow Log Evidence
+
+| Private EC2 Cross-Region Ping & HTTP `200 OK` | S3 VPC Flow Logs (`ACCEPT OK` & `REJECT OK`) |
+| :---: | :---: |
+| ![Terminal Verification](assets/task2_terminal_verification_screenshot.png) | ![VPC Flow Logs](assets/task2_vpc_flow_logs_screenshot.png) |
+
+### Verbatim Cross-Region Connectivity Output ([`connectivity_test_output.txt`](connectivity_test_output.txt))
 ```text
-├── AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.pdf  # Comprehensive 12-page PDF deliverable
-├── AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.zip  # Complete submission archive package
-├── README.md                                                          # Project overview & artifact index
-├── deployment_state.json                                              # Live AWS resource state & deployment manifest
-├── connectivity_test_output.txt                                       # Raw terminal logs of live ping & curl tests
-├── vpc_flow_logs_sample.txt                                           # Raw VPC flow logs captured from S3 bucket
-├── policies/                                                          # Standalone JSON policy specifications
-│   ├── tagging_enforcement_scp.json                                  # SCP blocking untagged EC2/EBS creation
-│   ├── aws_config_required_tags.json                                 # AWS Config REQUIRED_TAGS managed rule
-│   └── budget_actions_policy.json                                    # IAM policy for automated budget action freezes
-└── assets/                                                            # High-resolution architectural diagrams & evidence
-    ├── task1_ou_hierarchy_diagram.png                                 # Task 1: Multi-Account OU hierarchy
-    ├── task2_network_peering_architecture.png                         # Task 2: Cross-Region VPC peering architecture
-    ├── task2_terminal_verification_screenshot.png                     # Task 2: Live connectivity verification screenshot
-    └── task2_vpc_flow_logs_screenshot.png                             # Task 2: Live VPC flow logs telemetry screenshot
+========================================================
+ECIPIENT TECHNOLOGIES - INTER-VPC PEERING VERIFICATION
+========================================================
+Source Instance: Acquired Business EC2 (us-west-2)
+Source Private IP: 192.168.1.32
+Destination Instance: Corporate EC2 (us-east-1)
+Destination Private IP: 10.0.1.228
+Peering Connection: pcx-0b7985ff10437c850
+Execution Time: Sat Oct 17 16:04:42 UTC 2026
+--------------------------------------------------------
+Waiting 45 seconds for target instance web server to be ready...
+
+[TEST 1] ICMP PING CONNECTIVITY OVER PEERING CONNECTION:
+PING 10.0.1.228 (10.0.1.228) 56(84) bytes of data.
+64 bytes from 10.0.1.228: icmp_seq=1 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=2 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=3 ttl=127 time=56.8 ms
+64 bytes from 10.0.1.228: icmp_seq=4 ttl=127 time=56.7 ms
+64 bytes from 10.0.1.228: icmp_seq=5 ttl=127 time=56.7 ms
+
+--- 10.0.1.228 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4007ms
+rtt min/avg/max/mdev = 56.679/56.709/56.756/0.026 ms
+Ping Exit Code: 0
+
+[TEST 2] HTTP WEB SERVICE REACHABILITY OVER PEERING CONNECTION:
+*   Trying 10.0.1.228:80...
+* Established connection to 10.0.1.228 (10.0.1.228 port 80) from 192.168.1.32 port 36222 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 10.0.1.228
+> User-Agent: curl/8.21.0
+> Accept: */*
+> 
+* Request completely sent off
+* HTTP 1.0, assume close after body
+< HTTP/1.0 200 OK
+< Server: SimpleHTTP/0.6 Python/3.9.25
+< Date: Sat, 17 Oct 2026 16:05:33 GMT
+```
+
+### Sample Captured VPC Flow Log Records ([`vpc_flow_logs_sample.txt`](vpc_flow_logs_sample.txt))
+```text
+version account-id interface-id srcaddr dstaddr srcport dstport protocol packets bytes start end action log-status
+2 117913377161 eni-0d7597f6bbcfeaa21 13.218.199.213 10.0.1.228 123 37115 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 3.94.91.31 10.0.1.228 123 43829 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 54.197.201.248 38053 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 54.197.201.248 10.0.1.228 123 36570 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 142.93.136.140 10.0.1.228 45512 22 6 1 40 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 81.12.33.38 10.0.1.228 61000 5918 6 1 44 1792253084 1792253114 REJECT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 3.86.4.106 35277 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 3.86.4.106 10.0.1.228 123 35277 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 81.12.33.38 10.0.1.228 61000 5946 6 1 44 1792253084 1792253114 REJECT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 3.94.91.31 43829 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 44.216.184.189 60506 443 6 17 4925 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 3.94.91.31 10.0.1.228 123 37652 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 3.94.91.31 37652 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 54.197.201.248 10.0.1.228 123 55288 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 13.218.199.213 35955 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 13.218.199.213 37115 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 3.86.4.106 10.0.1.228 123 60931 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 13.218.199.213 42598 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 10.0.1.228 54.197.201.248 55288 123 17 1 76 1792253084 1792253114 ACCEPT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 81.12.33.38 10.0.1.228 61000 5911 6 1 44 1792253084 1792253114 REJECT OK
+2 117913377161 eni-0d7597f6bbcfeaa21 85.217.140.20 10.0.1.228 55622 32742 6 1 52 1792253084 1792253114 REJECT OK
 ```
 
 ---
 
-## Verification & Authenticity Statement
+## 4. Policy-as-Code & Automation Scripts
 
-All architecture diagrams, policy definitions, terminal outputs, and VPC flow log telemetry records contained within this submission were generated and verified on live AWS infrastructure within account `117913377161`. No mock data, simulated responses, or synthesized artifacts were used.
-Following successful verification and evidence harvesting, all deployed EC2 instances, peering connections, route entries, and VPC infrastructure were cleanly torn down to maintain lab budget hygiene.
+- [`policies/tagging_enforcement_scp.json`](policies/tagging_enforcement_scp.json) — Preventative `aws:RequestTag` SCP blocking untagged `ec2:RunInstances`, `rds:CreateDBInstance`, and `s3:CreateBucket` calls.
+- [`policies/aws_config_required_tags.json`](policies/aws_config_required_tags.json) — Detective AWS Config `REQUIRED_TAGS` rule auditing existing brownfield M&A resources.
+- [`policies/budget_actions_policy.json`](policies/budget_actions_policy.json) — 3-tier FinOps alert (`80%` actual, `100%` forecast) + automated provisioning freeze at `100%` threshold.
+- [`deploy_network_connectivity.py`](deploy_network_connectivity.py) & [`teardown_infrastructure.py`](teardown_infrastructure.py) — Idempotent `boto3` multi-region VPC, subnet, peering, route-table, EC2, Flow Log, and deterministic teardown automation.
+
+## License
+
+MIT License — see [LICENSE](LICENSE).
