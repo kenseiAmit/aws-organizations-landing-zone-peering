@@ -1,10 +1,12 @@
 <div align="center">
-  <img src="assets/hero-banner.svg" alt="AWS Organizations & VPC Peering" width="100%" />
+  <img src="assets/hero-banner.svg" alt="AWS Organizations &amp; VPC Peering" width="100%" />
   <br/><br/>
-  ![AWS Organizations](https://img.shields.io/badge/Governance-AWS%20Organizations%20%2B%20Control%20Tower-FF9900?style=flat-square&logo=amazonaws&logoColor=white)
-  ![VPC Peering](https://img.shields.io/badge/Networking-us--east--1%20%E2%86%94%20us--west--2%20(56.7ms)-0D9488?style=flat-square)
-  ![FinOps](https://img.shields.io/badge/FinOps-SCP%20Tagging%20%2B%20Budget%20Actions-2563EB?style=flat-square)
-  ![License](https://img.shields.io/badge/License-MIT-slate?style=flat-square)
+  <p>
+    <img src="https://img.shields.io/badge/Governance-AWS%20Organizations%20%2B%20Control%20Tower-FF9900?style=flat-square&amp;logo=amazonaws&amp;logoColor=white" alt="AWS Organizations" />
+    <img src="https://img.shields.io/badge/Networking-us--east--1%20%E2%86%94%20us--west--2%20%2856.7ms%29-0D9488?style=flat-square" alt="VPC Peering" />
+    <img src="https://img.shields.io/badge/FinOps-SCP%20Tagging%20%2B%20Budget%20Actions-2563EB?style=flat-square" alt="FinOps" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-475569?style=flat-square" alt="License" /></a>
+  </p>
 </div>
 
 ---
