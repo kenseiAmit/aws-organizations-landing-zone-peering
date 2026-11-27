@@ -11,6 +11,8 @@
 
 ---
 
+![AWS Organizations M&A Landing Zone, SCPs & FinOps Blueprint](docs/images/architecture_blueprint.png)
+
 Enterprise multi-account cloud governance and cross-region networking blueprint designed for post-M&A cloud consolidation (**Ecipient Technologies**). Combines a **5-OU AWS Organizations + Control Tower Landing Zone**, preventative **Service Control Policy (SCP) tag enforcement**, **AWS Config** detective compliance, automated **AWS Budgets IAM/SCP freeze actions**, and live `boto3`-provisioned **cross-region VPC peering (`us-east-1` `10.0.0.0/16` ↔ `us-west-2` `192.168.0.0/16`)** verified via private EC2 ICMP/HTTP probes and S3 VPC Flow Logs.
 
 Full 12-page architecture dossier: [`AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.pdf`](AWS_Organizations_Infrastructure_Design_Ecipient_Technologies.pdf).
